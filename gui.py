@@ -54,9 +54,16 @@ classes = { 1:'Speed limit (20km/h)',
 # Initialize GUI
 top = tk.Tk()
 top.geometry('800x600')
-top.title('Traffic sign classification')
-top.configure(background='#CDCDCD')
-label = Label(top, background='#CDCDCD', font=('arial', 15, 'bold'))
+top.title('Traffic Sign Classification')
+top.configure(background='#2D2D2D')
+
+# Styling Variables
+bg_color = "#2D2D2D"
+text_color = "#FFFFFF"
+button_color = "#FF5722"
+font_type = "Verdana"
+
+label = Label(top, background=bg_color, font=(font_type, 15, 'bold'), fg=text_color)
 sign_image = Label(top)
 
 def classify(file_path):
@@ -68,11 +75,11 @@ def classify(file_path):
     pred = model.predict(image)  
     sign = classes[np.argmax(pred) + 1]  # argmax used to find the class
     print(sign)
-    label.configure(foreground='#011638', text=sign)
+    label.configure(foreground=text_color, text=sign)
 
 def show_classify_button(file_path):
     classify_b = Button(top, text="Classify Image", command=lambda: classify(file_path), padx=10, pady=5)
-    classify_b.configure(background='#364156', foreground='white', font=('arial', 10, 'bold'))
+    classify_b.configure(background=button_color, foreground='white', font=(font_type, 10, 'bold'), relief=tk.FLAT)
     classify_b.place(relx=0.79, rely=0.46)
 
 def upload_image():
@@ -88,12 +95,13 @@ def upload_image():
     except Exception as e:
         print(e)
 
-upload = Button(top, text="Upload an image", command=upload_image, padx=10, pady=5)
-upload.configure(background='#364156', foreground='white', font=('arial', 10, 'bold'))
+upload = Button(top, text="Upload an Image", command=upload_image, padx=10, pady=5)
+upload.configure(background=button_color, foreground='white', font=(font_type, 10, 'bold'), relief=tk.FLAT)
 upload.pack(side=tk.BOTTOM, pady=50)
 sign_image.pack(side=tk.BOTTOM, expand=True)
 label.pack(side=tk.BOTTOM, expand=True)
-heading = Label(top, text="Check traffic sign", pady=20, font=('arial', 20, 'bold'))
-heading.configure(background='#CDCDCD', foreground='#364156')
+heading = Label(top, text="Check Traffic Sign", pady=20, font=(font_type, 20, 'bold'))
+heading.configure(background=bg_color, foreground=text_color)
 heading.pack()
+
 top.mainloop()
