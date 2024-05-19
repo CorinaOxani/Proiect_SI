@@ -4,23 +4,24 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from PIL import Image
 import os
-from sklearn.model_selection import train_test_split  # Corrected import
+from sklearn.model_selection import train_test_split  # funcția de împărțire a datelor
 from keras.utils import to_categorical
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout  # Corrected MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, Dense, Flatten, Dropout  # Import MaxPooling2D
 
 data = []
 labels = []
 classes = 43
 cur_path = os.getcwd()
 
+# Încărcarea datelor de antrenament din fiecare clasă
 for i in range(classes):
-    path = os.path.join(cur_path, 'train', str(i))  # Corrected path joining
+    path = os.path.join(cur_path, 'train', str(i))  # Corectare a modului de unire a căilor de acces de xe /pathtocurrentdirectory/train/0
     images = os.listdir(path)
     for a in images:
         try:
-            image = Image.open(os.path.join(path, a))  # Corrected path joining
-            image = image.resize((30, 30))  # Uniform image size for input
+            image = Image.open(os.path.join(path, a)) # Corectare a modului de unire a căilor de acces
+            image = image.resize((30, 30))  
             image = np.array(image)
             data.append(image)
             labels.append(i)
@@ -31,18 +32,18 @@ data = np.array(data)
 labels = np.array(labels)
 
 print(data.shape, labels.shape)
-# Splitting training and testing dataset
+# Împărțirea datelor în seturi de antrenament și testare
 X_t1, X_t2, y_t1, y_t2 = train_test_split(data, labels, test_size=0.2, random_state=42)
 print(X_t1.shape, X_t2.shape, y_t1.shape, y_t2.shape)
-# Converting the labels into one hot encoding
+# Convertirea etichetelor în codificare one-hot
 y_t1 = to_categorical(y_t1, classes)
 y_t2 = to_categorical(y_t2, classes)
 
 
-# Definirea modelului
+# Definirea arhitecturii modelului
 model = Sequential()
 
-# Adăugarea stratului Conv2D cu 32 de filtre și kernel de dimensiunea (5,5)
+# Adăugarea stratului Conv2D cu 32 de filtre și kernel de dimensiunea (5,5) , extragerea trasaturilor din imagini
 model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu', input_shape=X_t1.shape[1:]))
 model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
 # Adăugarea unui strat de MaxPooling
@@ -74,7 +75,7 @@ batch_size = 32
 history = model.fit(X_t1, y_t1, batch_size=batch_size, epochs=epochs, validation_data=(X_t2, y_t2))
 
 
-#plotting graphs for accuracy
+# Plotarea graficelor pentru acuratețe
 plt.figure(0)
 plt.plot(history.history['accuracy'], label='training accuracy')
 plt.plot(history.history['val_accuracy'], label='val accuracy')
@@ -92,7 +93,7 @@ plt.ylabel('loss')
 plt.legend()
 plt.show()
 
-#testing accuracy on test dataset
+# Testarea acurateței pe setul de date de test
 from sklearn.metrics import accuracy_score
 y_test = pd.read_csv('Test.csv')
 labels = y_test["ClassId"].values
@@ -103,10 +104,10 @@ for img in imgs:
    image = image.resize((30,30))
    data.append(np.array(image))
 X_test = np.array(data)
-pred = model.predict(X_test)  # Use predict instead of predict_classes
-pred_classes = np.argmax(pred, axis=1)  # Convert probabilities to class labels
-#Accuracy with the test data
+pred = model.predict(X_test)  
+pred_classes = np.argmax(pred, axis=1)   # Convertirea probabilităților în etichete de clasă
 from sklearn.metrics import accuracy_score
+# Calculul acurateței cu datele de test
 print(accuracy_score(labels, pred_classes)) 
 
 model.save('traffic_classifier.h5')#to save

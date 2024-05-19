@@ -68,12 +68,13 @@ sign_image = Label(top)
 
 def classify(file_path):
     global label_packed
-    image = Image.open(file_path)
+    image = Image.open(file_path).convert('RGB')  # Asigură-te că imaginea este în format RGB
     image = image.resize((30, 30))
-    image = np.expand_dims(image, axis=0)
     image = np.array(image)
+    image = np.expand_dims(image, axis=0)  # Adaugă o dimensiune batch pentru a obține forma (1, 30, 30, 3)
+    
     pred = model.predict(image)  
-    sign = classes[np.argmax(pred) + 1]  # argmax used to find the class
+    sign = classes[np.argmax(pred) + 1]  # Utilizează +1 pentru că indicii claselor încep de la 1 în dicționarul tău
     print(sign)
     label.configure(foreground=text_color, text=sign)
 
